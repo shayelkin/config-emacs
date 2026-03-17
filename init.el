@@ -21,7 +21,19 @@
   (expand-file-name "~/src/elisp")
   "Directory containing local sources for Emacs packages.")
 
-;; --- Package managment:
+;;; Similar to exec-path-from-shell, but with less boilerplate, so hopefully
+;;; faster. Works on bash and zsh, which is all I care about.
+(when on-mac-window-system
+  (let ((path-string (string-trim
+                      (with-temp-buffer
+                        (call-process (getenv "SHELL") nil t nil "-lc" "echo $PATH")
+                        (buffer-string)))))
+    (setq exec-path (parse-colon-path path-string))
+    (setenv "PATH" path-string)))
+
+
+
+;; --- Package management:
 
 ;; The only packages not configured by `use-package'. All three are internal.
 
@@ -393,10 +405,10 @@ When on a window system, also shrink the frame by the size of the deleted window
 (use-package vterm
   :bind ("<f12>" . vterm-other-window))
 
-(use-package exec-path-from-shell
-  :if on-mac-window-system
-  :custom (exec-path-from-shell-variables '("PATH"))
-  :config (exec-path-from-shell-initialize))
+;; (use-package exec-path-from-shell
+;;   :if on-mac-window-system
+;;   :custom (exec-path-from-shell-variables '("PATH"))
+;;   :config (exec-path-from-shell-initialize))
 
 (use-package ultra-scroll
   :config (ultra-scroll-mode))
@@ -405,8 +417,13 @@ When on a window system, also shrink the frame by the size of the deleted window
   :ensure-system-package (rg . ripgrep)
   :bind ("<f3>" . deadgrep))
 
+(use-package speedbar
+  :custom (speedbar-show-unknown-files t)
+  :defer t)
+
 (use-package sr-speedbar
-  :custom   (sr-speedbar-use-frame-root-window t)
+  :custom
+  (sr-speedbar-use-frame-root-window t)
   :commands (sr-speed-bar-toggle)
   :bind     ("<f10>" . sr-speedbar-toggle))
 
