@@ -300,7 +300,10 @@ When on a window system, also shrink the frame by the size of the deleted window
   :custom (magit-section-initial-visibility-alist
            '((stashes . show)
              (recent . show)
-             (unpushed . show))))
+             (unpushed . show)))
+  :config (magit-add-section-hook 'magit-status-sections-hook
+                                  'magit-insert-worktrees
+                                  'magit-insert-stashes t))
 
 (use-package diff-hl
   :after magit
