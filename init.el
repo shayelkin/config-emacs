@@ -21,8 +21,8 @@
   (expand-file-name "~/src/elisp")
   "Directory containing local sources for Emacs packages.")
 
-;;; Similar to exec-path-from-shell, but with less boilerplate, so hopefully
-;;; faster. Works on bash and zsh, which is all I care about.
+;; Similar to `exec-path-from-shell', but just the essence, so hopefully faster.
+;; Works on bash and zsh which is all I care about.
 (when on-mac-window-system
   (let ((path-string (string-trim
                       (with-temp-buffer
@@ -30,7 +30,6 @@
                         (buffer-string)))))
     (setq exec-path (parse-colon-path path-string))
     (setenv "PATH" path-string)))
-
 
 
 ;; --- Package management:
@@ -172,7 +171,15 @@ When on a window system, also shrink the frame by the size of the deleted window
   (set-fontset-font t nil (font-spec :family "Noto Sans Symbols") nil :append)
   (set-fontset-font t nil (font-spec :family "Noto Sans Symbols 2") nil :append))
 
+
 ;; --- Misc customizations:
+
+;; Set macOS GUI dark appearance based on frame background
+(defun my/ns-adjust-appereance (frame &rest _)
+  (modify-frame-parameters frame `((ns-appearance . ,(frame-parameter frame 'background-mode)))))
+
+(when on-mac-window-system
+  (advice-add 'frame-set-background-mode :after 'my/ns-adjust-appereance))
 
 (defun my/hide-menu-bar-on-text-frames (&optional frame)
   "Toggle the menu bar based on FRAME being text-only or graphical."
@@ -234,10 +241,31 @@ When on a window system, also shrink the frame by the size of the deleted window
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'prog-mode-hook #'electric-pair-local-mode)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 
+;; Mode line customization moved to its own file:
+(load (expand-file-name "my-mode-line" user-emacs-directory))
 
-;; --- Key bindings
+;; `treesit-auto' is slow to load. Just define major-mode-remap-alist for the
+;; built-in modes instead:
+(setq major-mode-remap-alist '((conf-toml-mode . toml-ts-mode)
+                               (ruby-mode . ruby-ts-mode)
+                               (python-mode . python-ts-mode)
+                               (js-json-mode . json-ts-mode)
+                               (javascript-mode . js-ts-mode)
+                               (js-mode . js-ts-mode)
+                               (java-mode . java-ts-mode)
+                               (sgml-mode . html-ts-mode)
+                               (mhtml-mode . html-ts-mode)
+                               (css-mode . css-ts-mode)
+                               (c++-mode . c++-ts-mode)
+                               (csharp-mode . csharp-ts-mode)
+                               (c-mode . c-ts-mode)
+                               (sh-mode . bash-ts-mode)
+                               (awk-mode . awk-ts-mode)
+                               (perl-mode . perl-ts-mode)))
+
+;; --- Key bindings:
 
 (bind-key "M-j" (lambda ()
                   "Joins the next line to this, regardless of where the point is in the line."
@@ -280,12 +308,9 @@ When on a window system, also shrink the frame by the size of the deleted window
   (keymap-set key-translation-map "s-<mouse-3>" "<mouse-2>"))
 
 
-;; Mode line customization moved to its own file:
-(load (expand-file-name "my-mode-line" user-emacs-directory))
-
 ;; --- Per package settings:
 
-(use-package smtpmail                  ;; built-in
+(use-package smtpmail ;; built-in
   :autoload smtpmail-send-it
   :custom
   (send-mail-function    'smtpmail-send-it)
@@ -309,13 +334,16 @@ When on a window system, also shrink the frame by the size of the deleted window
 
 (use-package magit
   :bind ("C-x g" . magit-status)
-  :custom (magit-section-initial-visibility-alist
-           '((stashes . show)
-             (recent . show)
-             (unpushed . show)))
-  :config (magit-add-section-hook 'magit-status-sections-hook
-                                  'magit-insert-worktrees
-                                  'magit-insert-stashes t))
+  :custom
+  (magit-section-initial-visibility-alist
+   '((stashes . show)
+     (recent . show)
+     (unpushed . show)))
+  (magit-status-margin '(t age magit-log-margin-width nil 18))
+  :config
+  (magit-add-section-hook 'magit-status-sections-hook
+                          'magit-insert-stashes
+                          'magit-insert-worktrees t))
 
 (use-package diff-hl
   :after magit
@@ -405,11 +433,6 @@ When on a window system, also shrink the frame by the size of the deleted window
 (use-package vterm
   :bind ("<f12>" . vterm-other-window))
 
-;; (use-package exec-path-from-shell
-;;   :if on-mac-window-system
-;;   :custom (exec-path-from-shell-variables '("PATH"))
-;;   :config (exec-path-from-shell-initialize))
-
 (use-package ultra-scroll
   :config (ultra-scroll-mode))
 
@@ -426,15 +449,6 @@ When on a window system, also shrink the frame by the size of the deleted window
   (sr-speedbar-use-frame-root-window t)
   :commands (sr-speed-bar-toggle)
   :bind     ("<f10>" . sr-speedbar-toggle))
-
-;; (use-package dired-sidebar
-;;   :load-path (lambda () (expand-file-name "dired-sidebar" elisp-src-dir))
-;;   :custom
-;;   (dired-sidebar-theme 'ascii)
-;;   (dired-sidebar-adjust-frame-width t)
-;;   :commands (dired-sidebar-toggle-sidebar)
-;;   :bind (("C-x C-n" . dired-sidebar-toggle-sidebar)
-;;          ("<f10>"   . dired-sidebar-toggle-sidebar)))
 
 (use-package makefile-executor
   :hook (makefile-mode . makefile-executor-mode))
@@ -453,20 +467,22 @@ When on a window system, also shrink the frame by the size of the deleted window
   (markdown-header-scaling-values '(1.5 1.3 1.2 1.1 1.1 1.1))
   ;; Make the default font for markdown buffers variable-pitch
   :hook (markdown-mode . (lambda ()
-                           (setq buffer-face-mode-face '(:inherit variable-pitch))
+                           (setq buffer-face-mode-face '(:inherit variable-pitch :height 1.1))
                            (buffer-face-mode))))
 
 ;; (use-package markdown-ts-mode
 ;;   :mode "\\.md\\'"
 ;;   :config
-;;   (add-to-list 'treesit-language-source-alist '(markdown
-;;                                                 "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-;;                                                 "split_parser"
-;;                                                 "tree-sitter-markdown/src"))
-;;   (add-to-list 'treesit-language-source-alist '(markdown-inline
-;;                                                 "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-;;                                                 "split_parser"
-;;                                                 "tree-sitter-markdown-inline/src")))
+;;   (add-to-list 'treesit-language-source-alist
+;;                '(markdown
+;;                  "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+;;                  "split_parser"
+;;                  "tree-sitter-markdown/src"))
+;;   (add-to-list 'treesit-language-source-alist
+;;                '(markdown-inline
+;;                  "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+;;                  "split_parser"
+;;                  "tree-sitter-markdown-inline/src")))
 
 (use-package swift-ts-mode
   :ensure nil
@@ -485,7 +501,8 @@ When on a window system, also shrink the frame by the size of the deleted window
 
 (use-package protobuf-ts-mode
   :mode "\\.proto\\'"
-  :config (add-to-list 'treesit-language-source-alist '(proto "https://github.com/mitchellh/tree-sitter-proto")))
+  :config (add-to-list 'treesit-language-source-alist
+                       '(proto "https://github.com/mitchellh/tree-sitter-proto")))
 
 (use-package terraform-mode
   :mode "\\.t\\(f\\(vars\\)?\\|ofu\\)\\'")
@@ -498,47 +515,15 @@ When on a window system, also shrink the frame by the size of the deleted window
 
 (use-package scala-ts-mode
   :ensure nil
-  :mode
-  "\\.scala\\'"
-  "\\.sc\\'"
-  "\\.sbt\\'")
-
-;; Configure treesit to be used with all supported langs:
-;; (use-package treesit-auto
-;;   :config (treesit-auto-add-to-auto-mode-alist nil))
-
-;; `treesit-auto' is slow to load. Just define major-mode-remap-alist for the
-;; built-in modes instead:
-(setq major-mode-remap-alist '((conf-toml-mode . toml-ts-mode)
-                               (ruby-mode . ruby-ts-mode)
-                               (python-mode . python-ts-mode)
-                               (js-json-mode . json-ts-mode)
-                               (javascript-mode . js-ts-mode)
-                               (js-mode . js-ts-mode)
-                               (java-mode . java-ts-mode)
-                               (sgml-mode . html-ts-mode)
-                               (mhtml-mode . html-ts-mode)
-                               (css-mode . css-ts-mode)
-                               (c++-mode . c++-ts-mode)
-                               (csharp-mode . csharp-ts-mode)
-                               (c-mode . c-ts-mode)
-                               (sh-mode . bash-ts-mode)
-                               (awk-mode . awk-ts-mode)
-                               (perl-mode . perl-ts-mode)))
+  :mode "\\.sc\\(ala\\)?\\'" "\\.sbt\\'")
 
 (use-package dash-at-point
   :ensure-system-package "/Applications/Dash.app"
   :bind ("C-?" . dash-at-point))
 
-(use-package agent-shell
-  :bind ("<f6>" . agent-shell)
-  ;; Can't use `:custom' as it doesn't evaluate its arguments
-  :config
-  (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config)
-        agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t)))
-
 (use-package server   ;; built in
   :config (server-start))
+
 
 ;; --- custom-file:
 

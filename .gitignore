@@ -15,3 +15,9 @@ dist/
 
 # Undo-tree save-files
 *.~undo-tree
+
+# Native compilation cache
+/eln-cache/
+
+# Tramp connection history
+/tramp
