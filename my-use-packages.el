@@ -1,4 +1,4 @@
-;;; use-packages.el -- Emacs package configurations. -*- lexical-binding: t -*-
+;;; my-use-packages.el -- Emacs package configurations. -*- lexical-binding: t -*-
 
 ;; SPDX-License-Identifier: MIT
 ;; Author: Shay Elkin <shay@elkin.io>
@@ -231,4 +231,5 @@
   :hook emacs-lisp-mode)
 
 
-;;; use-packages.el ends here
+(provide 'my-use-packages)
+;;; my-use-packages.el ends here

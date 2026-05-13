@@ -26,14 +26,14 @@
                                          flymake-mode-line-warning-counter
                                          flymake-mode-line-note-counter " "))
 
-(defvar my/flymake-empty-counters-propertized-str
+(defvar my--flymake-empty-counters-propertized-str
   `(:propertize ("✔ ")
                 help-echo "mouse-1: Check now"
                 local-map ,(let ((map (make-sparse-keymap)))
                              (define-key map [mode-line down-mouse-1] 'flymake-start)
                              map)))
 
-(defun my/flymake-mode-line ()
+(defun my--flymake-mode-line ()
   "Mode line construct for Flymake information."
   (when (bound-and-true-p flymake-mode)
     (let* ((exception (format-mode-line flymake-mode-line-exception))
@@ -43,28 +43,28 @@
       (list
        exception
        (cond ((> counters-sum 0) counters)
-             ((length= exception 0) my/flymake-empty-counters-propertized-str))))))
+             ((length= exception 0) my--flymake-empty-counters-propertized-str))))))
 
 ;; The default value for mode-line-buffer-identification is ("%12b"), I want just " %b ".
 
-(defvar my/propertized-buffer-identification
+(defvar my--propertized-buffer-identification
   (car (propertized-buffer-identification " %b ")))
 
 (defface mode-line-buffer-id-modified
   '((t (:inherit (mode-line-buffer-id warning))))
   "Face used for buffer identification in the mode line, when buffer is modified.")
 
-(defvar my/propertized-buffer-identification-modified
-  (let ((copy (copy-sequence my/propertized-buffer-identification)))
+(defvar my--propertized-buffer-identification-modified
+  (let ((copy (copy-sequence my--propertized-buffer-identification)))
     (add-face-text-property 1 (1- (length copy)) 'mode-line-buffer-id-modified t copy)
     copy))
 
-(defun my/mode-line-buffer-identification ()
+(defun my--mode-line-buffer-identification ()
   "Return `mode-line-buffer-identification' propertized in `mode-line-buffer-id-modified' when buffer is modified."
   (cond
    ((local-variable-p 'mode-line-buffer-identification) mode-line-buffer-identification)
-   ((buffer-modified-p) my/propertized-buffer-identification-modified)
-   (t my/propertized-buffer-identification)))
+   ((buffer-modified-p) my--propertized-buffer-identification-modified)
+   (t my--propertized-buffer-identification)))
 
 (defun string-pixel-width-face (str face)
   "Return pixel width of STR when rendered with in FACE."
@@ -73,18 +73,18 @@
     (add-face-text-property 0 (length copy) face t copy)
     (string-pixel-width copy)))
 
-(defconst my/nyan-char-width-px 8)
+(defconst my--nyan-char-width-px 8)
 
 (defvar-local nyan-cache nil
   "A cons cell with (nyan-bar-length (point)) as car, and a matching nyan bar as cdr.")
 
-(defun my/mode-line-middle ()
-  (let* ((left-str (format-mode-line my/mode-line-format-left))
+(defun my--mode-line-middle ()
+  (let* ((left-str (format-mode-line my--mode-line-format-left))
          (left-px  (string-pixel-width-face left-str 'mode-line))
-         (right-str (format-mode-line my/mode-line-format-right))
+         (right-str (format-mode-line my--mode-line-format-right))
          (right-px  (string-pixel-width-face right-str 'mode-line))
          (space-px (- (window-pixel-width) left-px right-px))
-         (nyan-bar-length (1- (/ space-px my/nyan-char-width-px)))
+         (nyan-bar-length (1- (/ space-px my--nyan-char-width-px)))
          (draw-nyan (and (display-graphic-p) (> nyan-bar-length 3))))
     (list ""
           (if (not draw-nyan) '(-3 "%p")
@@ -97,14 +97,14 @@
             (cdr nyan-cache))
           (propertize " " 'display `(space :align-to (- right-fringe (,right-px)))))))
 
-(defvar my/mode-line-format-left
+(defvar my--mode-line-format-left
   '(("" mode-line-mule-info mode-line-client mode-line-modified
      mode-line-remote mode-line-window-dedicated)
-    (:eval (my/mode-line-buffer-identification))
+    (:eval (my--mode-line-buffer-identification))
     (vc-mode vc-mode) "\t"
     mode-line-position))
 
-(defvar my/mode-line-format-right
+(defvar my--mode-line-format-right
   `((:eval (when indent-tabs-mode #("TAB " 0 3 (face warning))))
     mode-line-misc-info
     (:propertize ("" mode-name)
@@ -114,13 +114,13 @@ mouse-3: Toggle minor modes"
                  mouse-face mode-line-highlight
                  local-map ,mode-line-major-mode-keymap)
     " "
-    (:eval (my/flymake-mode-line))
+    (:eval (my--flymake-mode-line))
     mode-line-process))
 
 (setq-default mode-line-format
-              `(,@my/mode-line-format-left
-                (:eval (my/mode-line-middle))
-                ,@my/mode-line-format-right))
+              `(,@my--mode-line-format-left
+                (:eval (my--mode-line-middle))
+                ,@my--mode-line-format-right))
 
 (provide 'my-mode-line)
 ;;; my-mode-line.el ends here
