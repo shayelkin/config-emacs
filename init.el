@@ -76,13 +76,6 @@
 
 ;; --- Misc customizations:
 
-;; Set macOS GUI dark appearance based on frame background
-(defun my--ns-adjust-appereance (frame &rest _)
-  (modify-frame-parameters frame `((ns-appearance . ,(frame-parameter frame 'background-mode)))))
-
-(when on-mac-window-system
-  (advice-add 'frame-set-background-mode :after 'my--ns-adjust-appereance))
-
 (defun my--hide-menu-bar-on-text-frames (&optional frame)
   "Toggle the menu bar based on FRAME being text-only or graphical."
   (let ((frame (or frame (selected-frame))))
@@ -147,6 +140,8 @@
 
 ;; Mode line customization moved to its own file:
 (load (expand-file-name "my-mode-line" user-emacs-directory))
+
+(setq treesit-extra-load-path (list (expand-file-name "~/.local/lib/tree-sitter")))
 
 ;; `treesit-auto' is slow to load. Just define major-mode-remap-alist for the
 ;; built-in modes instead:
