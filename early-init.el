@@ -20,9 +20,13 @@
 ;; toolbar after frame creation takes 0.2s).
 (modify-all-frames-parameters
  '((height . 52)
+   (width . 100)
    (tool-bar-lines . 0)
-   (vertical-scroll-bars . nil)))
+   (vertical-scroll-bars . nil)
+   (ns-appearance . dark)
+   (ns-transparent-titlebar . t)))
 
+;; Only set this on the initial frame
 (add-to-list 'initial-frame-alist
              `(width . ,(1+ split-width-threshold)))
 
