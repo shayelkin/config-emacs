@@ -162,6 +162,20 @@
                                (awk-mode . awk-ts-mode)
                                (perl-mode . perl-ts-mode)))
 
+;; These ts-modes have no non-ts fallback and/or their `auto-mode-alist' setup runs only after load.
+(dolist (entry '(("\\.ya?ml\\'"    . yaml-ts-mode)
+                 ("/Dockerfile\\'" . dockerfile-ts-mode)
+                 ("\\.go\\'"       . go-ts-mode)
+                 ("/go\\.mod\\'"   . go-mod-ts-mode)
+                 ("\\.lua\\'"      . lua-ts-mode)
+                 ("\\.rs\\'"       . rust-ts-mode)
+                 ("\\.ts\\'"       . typescript-ts-mode)
+                 ("\\.tsx\\'"      . tsx-ts-mode)
+                 ("\\.heex\\'"     . heex-ts-mode)
+                 ("\\.exs?\\'"     . elixir-ts-mode)))
+  (unless (assoc (car entry) auto-mode-alist)
+    (push entry auto-mode-alist)))
+
 ;; --- Key bindings:
 
 (bind-key "M-j" (lambda ()
