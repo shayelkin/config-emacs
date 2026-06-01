@@ -230,5 +230,9 @@
 (use-package server ;; built in
   :config (server-start))
 
+;; Embed `system-name' in the local settings filename, to reduce chance of accidental
+;; overwrite when blinding copying across machines.
+(load (expand-file-name (format "init-%s" (system-name))) t)
+
 (provide 'init)
 ;;; init.el ends here
