@@ -14,6 +14,12 @@
 (when (version< emacs-version "30")
   (error "It is time to upgrade this Emacs installation!"))
 
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs loaded in %.3f seconds with %d garbage collections done."
+                     (float-time (time-subtract after-init-time before-init-time))
+                     gcs-done)))
+
 (defconst on-mac-window-system (memq window-system '(mac ns))
   "Non-nil when running on macOS graphical environment.")
 
@@ -31,7 +37,6 @@
     (setq exec-path (parse-colon-path path-string))
     (setenv "PATH" path-string)))
 
-
 ;; --- Package management:
 
 ;; The only packages not configured by `use-package'. All three are internal.
@@ -44,24 +49,15 @@
                                    ("gnu"          . 1)
                                    ("melpa"        . 2)))
 
+
 (require 'bind-key)
 
-;; --- Useful commands:
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "Emacs loaded in %.3f seconds with %d garbage collections done."
-                     (float-time (time-subtract after-init-time before-init-time))
-                     gcs-done)))
-
-
-
-;; Functions in their own file:
+;; Commands live  in their own file:
 (load (expand-file-name "my-commands" user-emacs-directory))
 
 (bind-key "<f8>" 'github-url-at-point)
-
-(bind-keys* ("C-{" . shrink-frame-horizontally)
+(bind-keys* ("C-c C-i" . indent-whole-buffer)
+            ("C-{" . shrink-frame-horizontally)
             ("C-}" . expand-frame-horizontally))
 
 
@@ -141,6 +137,8 @@
 ;; Mode line customization moved to its own file:
 (load (expand-file-name "my-mode-line" user-emacs-directory))
 
+;; --- Tree-sitter support:
+
 (setq treesit-extra-load-path (list (expand-file-name "~/.local/lib/tree-sitter")))
 
 ;; `treesit-auto' is slow to load. Just define major-mode-remap-alist for the
@@ -201,14 +199,6 @@
 ;; C-) (aka C-S-0) needs bind-key* to override a default binding in `paredit-mode-map'.
 (bind-key* "C-)" (lambda ()
                    (interactive) (text-scale-increase 0)))
-
-
-(defun indent-whole-buffer ()
-  "Indent the whole buffer."
-  (interactive)
-  (indent-region (point-min) (point-max) nil))
-
-(bind-key* "C-c C-i"  #'indent-whole-buffer)
 
 (when on-mac-window-system
   (keymap-global-unset  "s-t")

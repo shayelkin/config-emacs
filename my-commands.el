@@ -10,6 +10,11 @@
 
 ;;; Code:
 
+(defun indent-whole-buffer ()
+  "Indent the whole buffer."
+  (interactive)
+  (indent-region (point-min) (point-max) nil))
+
 (defun rename-file-and-buffer (new-name)
   "Renames both the current buffer and the file it's visiting to NEW-NAME."
   (interactive "sNew name: ")

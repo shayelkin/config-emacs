@@ -70,7 +70,9 @@
     (setq which-func-format (cadr which-func-format)))
   :hook
   ;; Package is called `which-func', but mode is `which-function-mode'
-  (java-ts-mode . which-function-mode))
+  ((c++-ts-mode java-ts-mode js-ts-mode) . which-function-mode)
+  :custom-face
+  (which-func ((t (:inherit nil)))))
 
 (use-package yasnippet
   :defer t)
@@ -137,12 +139,15 @@
 
 ;; --- Major modes:
 
-;; `markdown-ts-mode' exists, but markdown-mode has better ergonomics right now.
+(use-package js ;; built-in
+  :custom (js-indent-level 2))
+
+;; `markdown-ts-mode' exists, but markdown-mode has better ergonomics.
 (use-package markdown-mode
   :mode "\\.md\\'"
   :custom
   (markdown-header-scaling t)
-  (markdown-header-scaling-values '(1.5 1.3 1.2 1.1 1.1 1.1))
+  (markdown-header-scaling-values '(1.7 1.5 1.3 1.2 1.1 1.1))
   ;; Make the default font for markdown buffers variable-pitch
   :hook (markdown-mode . (lambda ()
                            (setq buffer-face-mode-face '(:inherit variable-pitch :height 1.1))
