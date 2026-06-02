@@ -22,9 +22,7 @@
  '((height . 52)
    (width . 100)
    (tool-bar-lines . 0)
-   (vertical-scroll-bars . nil)
-   (ns-appearance . dark)
-   (ns-transparent-titlebar . t)))
+   (vertical-scroll-bars . nil)))
 
 ;; Only set this on the initial frame
 (add-to-list 'initial-frame-alist
