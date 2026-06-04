@@ -30,6 +30,11 @@
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 
+
+;;; ======================================================================
+;;; Generate a GitHub link for the current position
+;;; ======================================================================
+
 (defun my--github-remote-urls ()
   "Return the URLs for the current buffer's git remotes that are hosted on GitHub."
   (declare-function magit-get "magit-git")
@@ -63,8 +68,10 @@
     (when (called-interactively-p 'interactive)
       (message "Can't find a GitHub hosted remote for the current buffer"))))
 
-;; Add or remove a pane and change the size of the frame, keeping the existing
-;; windows in the frame the same size.
+
+;;; ======================================================================
+;;; Add/remove window from a frame, keeping existing windows the same size
+;;; ======================================================================
 
 (defun shrink-frame-horizontally (&optional window)
   "Delete the window to the right of WINDOW.
@@ -110,6 +117,8 @@ When on a window system, also shrink the frame by the size of the deleted window
       (set-frame-width frame original-frame-width)
       (message "Failed to create new window"))))
 
+
+;;; ======================================================================
 
 (provide 'my-commands)
 ;;; my-commands.el ends here

@@ -13,11 +13,14 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package nyan-mode
   :custom (nyan-minimum-window-width 0))
 
 (setq mode-line-right-align-edge 'right-fringe
-      ;; `my/mode-line-middle' puts a `%p' if needed.
+      ;; `my--mode-line-middle' puts a `%p' if needed.
       mode-line-percent-position nil
       vc-display-status 'no-backend
       ;; Remove the square brackets around the counters.
