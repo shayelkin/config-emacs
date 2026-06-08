@@ -115,7 +115,7 @@
   (keymap-global-unset  "s-t")
   (keymap-global-unset  "s-q")
   (bind-key "s-<return>" #'toggle-frame-maximized)
-  (bind-key "s-w"        #'kill-ring-save)
+  (bind-key "s-w"        #'delete-frame)
   ;; Emulate a 3-button mouse (<mouse-2> is middle click, <mouse-3> right click)
   (keymap-set key-translation-map "s-<mouse-3>" "<mouse-2>"))
 

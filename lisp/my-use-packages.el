@@ -54,10 +54,10 @@
 (use-package magit
   :bind ("C-x g" . magit-status)
   :custom
-  (magit-section-initial-visibility-alist
-   '((stashes . show)
-     (recent . show)
-     (unpushed . show)))
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  (magit-section-initial-visibility-alist '((stashes . show)
+                                            (recent . show)
+                                            (unpushed . show)))
   (magit-status-margin '(t age magit-log-margin-width nil 18))
   :hook (git-commit-setup . (lambda () (setq-local fill-column 72)))
   :config (magit-add-section-hook 'magit-status-sections-hook
