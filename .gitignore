@@ -21,3 +21,10 @@ dist/
 
 # Tramp connection history
 /tramp
+
+# Downloaded packaged
+/elpa/
+
+# Temporary files
+/org-persist/
+/transient/
