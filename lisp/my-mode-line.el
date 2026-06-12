@@ -125,5 +125,11 @@ mouse-3: Toggle minor modes"
                 (:eval (my--mode-line-middle))
                 ,@my--mode-line-format-right))
 
+(custom-set-faces
+ ;; White on bright blue
+ '(mode-line ((t (:inherit variable-pitch :height 1.2 :background "#0059d1" :foreground "#fff"))))
+ '(mode-line-inactive ((t (:inherit variable-pitch :height 1.2)))))
+
+
 (provide 'my-mode-line)
 ;;; my-mode-line.el ends here
