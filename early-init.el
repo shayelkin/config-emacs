@@ -25,8 +25,8 @@
    (vertical-scroll-bars . nil)))
 
 ;; Only set this on the initial frame
-(add-to-list 'initial-frame-alist
-             `(width . ,(1+ split-width-threshold)))
+;; (add-to-list 'initial-frame-alist
+;;              `(width . ,(1+ split-width-threshold)))
 
 (provide 'early-init)
 ;;; early-init.el ends here

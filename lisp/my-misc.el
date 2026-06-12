@@ -21,6 +21,9 @@
   (set-fontset-font t nil (font-spec :family "Noto Sans Symbols") nil :append)
   (set-fontset-font t nil (font-spec :family "Noto Sans Symbols 2") nil :append))
 
+(set-face-attribute 'default nil :family "Comic Code")
+(set-face-attribute 'variable-pitch nil :family "Noto Sans")
+
 
 ;;; ======================================================================
 ;;; Frame display
