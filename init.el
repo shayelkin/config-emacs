@@ -94,6 +94,8 @@
 (bind-key "<f2>" #'revert-buffer-quick)
 (bind-key* "C-." #'completion-at-point)
 
+(bind-key "C-h m" #'manual-entry)
+
 (bind-keys
  ("C-c C-k"    . kill-region)
  ("C-w"        . backward-kill-word)

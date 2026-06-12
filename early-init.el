@@ -19,8 +19,8 @@
 ;; Set frame parameters before it is displayed, to avoid a redraw (hiding the
 ;; toolbar after frame creation takes 0.2s).
 (modify-all-frames-parameters
- '((height . 52)
-   (width . 100)
+ '((height . 53)
+   (width . 202)
    (tool-bar-lines . 0)
    (vertical-scroll-bars . nil)))
 

@@ -225,10 +225,10 @@
   :mode "\\.md\\'"
   :custom
   (markdown-header-scaling t)
-  (markdown-header-scaling-values '(1.7 1.5 1.3 1.2 1.1 1.1))
+  (markdown-header-scaling-values '(1.6 1.3 1.1 1.0 1.0 1.0))
   ;; Make the default font for markdown buffers variable-pitch
   :hook (markdown-mode . (lambda ()
-                           (setq buffer-face-mode-face '(:inherit variable-pitch :height 1.1))
+                           (setq buffer-face-mode-face '(:inherit variable-pitch :height 1.2))
                            (buffer-face-mode))))
 
 ;; (use-package markdown-ts-mode
